@@ -1,0 +1,60 @@
+.header {
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-squares {
+  display: flex;
+  gap: 2px;
+}
+
+.square {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+}
+
+.square.green {
+  background-color: #4CAF50;
+  transform: translateY(-2px);
+}
+
+.square.pink {
+  background-color: #E91E63;
+  transform: translateY(0);
+}
+
+.square.blue {
+  background-color: #2196F3;
+  transform: translateY(2px);
+}
+
+.logo h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 15px 0;
+  }
+  
+  .logo h1 {
+    font-size: 20px;
+  }
+  
+  .square {
+    width: 16px;
+    height: 16px;
+  }
+} 

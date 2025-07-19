@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미래엔영어 네이버플레이스 점검 도구</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-squares {
+            display: flex;
+            gap: 2px;
+        }
+
+        .square {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .square.green { background-color: #4CAF50; transform: translateY(-2px); }
+        .square.pink { background-color: #E91E63; transform: translateY(0); }
+        .square.blue { background-color: #2196F3; transform: translateY(2px); }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            background-color: white;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .tab-button.active {
+            background-color: #2196F3;
+            color: white;
+            box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+        }
+
+        /* Content Sections */
+        .content-section {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .section-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .section-description {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .url-input, .academy-input, .keywords-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .url-input:focus, .academy-input:focus, .keywords-textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .keywords-textarea {
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .analyze-button, .check-button {
+            width: 100%;
+            padding: 14px 24px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .analyze-button:hover, .check-button:hover {
+            background-color: #1976D2;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #FFF3CD;
+            border: 1px solid #FFEAA7;
+            border-radius: 8px;
+            padding: 16px;
+            color: #856404;
+            margin-bottom: 20px;
+        }
+
+        /* Score Section */
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .score {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FF6B6B;
+        }
+
+        .recommendation {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #FF6B6B;
+            font-weight: 500;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .summary-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2196F3;
+            margin-bottom: 8px;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Keyword Tags */
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .keyword-tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .keyword-tag.set {
+            background-color: #E3F2FD;
+            color: #1976D2;
+            border: 1px solid #BBDEFB;
+        }
+
+        .keyword-tag.missing {
+            background-color: #FFEBEE;
+            color: #D32F2F;
+            border: 1px solid #FFCDD2;
+        }
+
+        /* Checklist */
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .checklist-item.complete {
+            background-color: #E8F5E8;
+            border-color: #4CAF50;
+        }
+
+        .checklist-item.incomplete {
+            background-color: #FFEBEE;
+            border-color: #F44336;
+        }
+
+        .checklist-item.warning {
+            background-color: #FFF3E0;
+            border-color: #FF9800;
+        }
+
+        .checklist-icon {
+            font-size: 18px;
+            font-weight: bold;
+            min-width: 20px;
+        }
+
+        .checklist-item.complete .checklist-icon { color: #4CAF50; }
+        .checklist-item.incomplete .checklist-icon { color: #F44336; }
+        .checklist-item.warning .checklist-icon { color: #FF9800; }
+
+        .checklist-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .checklist-content p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Rank List */
+        .rank-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .rank-item.excellent { background-color: #E8F5E8; }
+        .rank-item.good { background-color: #FFF3E0; }
+        .rank-item.needs-improvement { background-color: #FFEBEE; }
+        .rank-item.not-exposed { background-color: #F5F5F5; }
+
+        .rank-keyword {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .rank-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rank-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .rank-status {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: white;
+            border: 1px solid currentColor;
+        }
+
+        .rank-status.excellent { color: #4CAF50; }
+        .rank-status.good { color: #FF9800; }
+        .rank-status.needs-improvement { color: #F44336; }
+        .rank-status.not-exposed { color: #9E9E9E; }
+
+        /* Improvement Items */
+        .improvement-item {
+            background-color: #FFEBEE;
+            border: 1px solid #FFCDD2;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .improvement-item h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #D32F2F;
+            margin-bottom: 8px;
+        }
+
+        .improvement-item p {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .logo h1 {
+                font-size: 20px;
+            }
+            
+            .square {
+                width: 16px;
+                height: 16px;
+            }
+            
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .summary-number {
+                font-size: 24px;
+            }
+            
+            .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .rank-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .rank-info {
+                align-self: flex-end;
+            }
+        }
+
+        /* Hide/Show Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-squares">
+                    <div class="square green"></div>
+                    <div class="square pink"></div>
+                    <div class="square blue"></div>
+                </div>
+                <h1>미래엔영어 네이버플레이스 점검 도구</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Tab Navigation -->
+        <nav class="tab-navigation">
+            <button class="tab-button active" onclick="showTab('analysis')">플레이스 분석</button>
+            <button class="tab-button" onclick="showTab('keyword')">키워드 순위 확인</button>
+        </nav>
+
+        <!-- Place Analysis Tab -->
+        <div id="analysis-tab" class="tab-content active">
+            <!-- Analysis Section -->
+            <div class="content-section">
+                <div class="section-header">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+                    </svg>
+                    <h2>미래엔영어 가맹점 전용 분석</h2>
+                </div>
+                <p class="section-description">
+                    미래엔이 만든 초중등 영어학원 프랜차이즈의 네이버플레이스 최적화 상태를 체크합니다.
+                </p>
+                
+                <div class="input-group">
+                    <input type="text" class="url-input" value="https://map.naver.com/p/search/%EB%B2%8C%EC%9B%90%ED%95%99%EC%9B%90/place/1616011574?placePath=/home?entry=pll&from=nx&fromNxList=true&fromPanelNum=2&timestamp=202507181409&locale=ko&svcName=map_pcv5&searchText=%EB%B2%8C%EC%9B%90%ED%95%99%EC%9B%90&searchType=place&c=15.00,0,0,0,dh" placeholder="네이버플레이스 URL을 입력하세요">
+                </div>
+                
+                <button class="analyze-button" onclick="analyzePlace()">분석 시작</button>
+            </div>
+
+            <!-- Warning Box -->
+            <div class="warning-box">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                    <path d="M12 9v4"/>
+                    <path d="m12 17 .01 0"/>
+                </svg>
+                <span>▲ 데모 버전: 실제 URL 분석을 위해서는 네이버플레이스 스크래핑 기능을 추가해야 합니다.</span>
+            </div>
+
+            <!-- Overall Score -->
+            <div class="content-section">
+                <h3>전체 점수</h3>
+                <div class="score-display">
+                    <span class="score">37/100</span>
+                    <span class="recommendation">
+                        <svg class="icon" style="width: 16px; height: 16px;" viewBox="0 0 24 24">
+                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                        </svg>
+                        개선 필요
+                    </span>
+                </div>
+            </div>
+
+            <!-- Keyword Analysis -->
+            <div class="content-section">
+                <h3>● 대표 키워드 분석</h3>
+                <p>설정된 키워드: 3개 | 권장 키워드: 8개 | 누락: 6개</p>
+                
+                <div class="keyword-tags">
+                    <span class="keyword-tag set">벌원학원</span>
+                    <span class="keyword-tag set">영어학원</span>
+                    <span class="keyword-tag set">초등영어</span>
+                    <span class="keyword-tag missing">미래엔영어 (누락)</span>
+                    <span class="keyword-tag missing">중등영어 (누락)</span>
+                    <span class="keyword-tag missing">파닉스 (누락)</span>
+                    <span class="keyword-tag missing">영어교육 (누락)</span>
+                    <span class="keyword-tag missing">학원 (누락)</span>
+                    <span class="keyword-tag missing">미래엔 (누락)</span>
+                </div>
+            </div>
+
+            <!-- Checklist -->
+            <div class="content-section">
+                <h3>정보 완성도 체크리스트</h3>
+                <div class="checklist-grid">
+                    <div class="checklist-item complete">
+                        <div class="checklist-icon">✓</div>
+                        <div class="checklist-content">
+                            <h4>기본 정보 완성도</h4>
+                            <p>학원명, 주소, 전화번호, 영업시간 등</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item incomplete">
+                        <div class="checklist-icon">✗</div>
+                        <div class="checklist-content">
+                            <h4>상세 설명 충실도</h4>
+                            <p>미래엔 교재 사용, 교육 방식, 학원 특징 설명</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item incomplete">
+                        <div class="checklist-icon">✗</div>
+                        <div class="checklist-content">
+                            <h4>프로그램 정보</h4>
+                            <p>초등영어, 중등영어, 파닉스 등 과정별 안내</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item incomplete">
+                        <div class="checklist-icon">✗</div>
+                        <div class="checklist-content">
+                            <h4>쿠폰/이벤트</h4>
+                            <p>체험 수업, 등록 할인, 추천 혜택 등</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item warning">
+                        <div class="checklist-icon">⚠</div>
+                        <div class="checklist-content">
+                            <h4>대표 키워드 설정</h4>
+                            <p>미래엔영어, 초등영어, 중등영어, 영어학원 등</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item warning">
+                        <div class="checklist-icon">⚠</div>
+                        <div class="checklist-content">
+                            <h4>이미지 등록 상태</h4>
+                            <p>학원 외관, 내부, 교실, 교재 사진 등 5개 이상</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item incomplete">
+                        <div class="checklist-icon">✗</div>
+                        <div class="checklist-content">
+                            <h4>수강료 정보</h4>
+                            <p>월 수강료, 등록비, 교재비 등 요금 안내</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checklist-item complete">
+                        <div class="checklist-icon">✓</div>
+                        <div class="checklist-content">
+                            <h4>리뷰 관리</h4>
+                            <p>학부모 리뷰 응답률 및 평점 관리</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Improvement Suggestions -->
+            <div class="content-section">
+                <h3>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                        <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                        <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                    </svg>
+                    ★개선 제안사항
+                </h3>
+                
+                <div class="improvement-item">
+                    <h4>대표 키워드 완성 필요 (높은 우선순위)</h4>
+                    <p>"미래엔영어", "파닉스", "영어교육" 등 브랜드 핵심 키워드를 추가하여 검색 노출을 향상시키세요.</p>
+                </div>
+                
+                <div class="improvement-item">
+                    <h4>상세 설명 보강 필요</h4>
+                    <p>미래엔 교재 사용, 체계적인 교육 과정, 학원만의 특징을 구체적으로 설명하세요.</p>
+                </div>
+                
+                <div class="improvement-item">
+                    <h4>수강료 정보 등록</h4>
+                    <p>월 수강료, 등록비, 교재비 등 구체적인 요금 정보를 등록하여 학부모의 문의를 줄이세요.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Keyword Rank Check Tab -->
+        <div id="keyword-tab" class="tab-content">
+            <!-- Header -->
+            <div class="content-section">
+                <div class="section-header">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                        <path d="M4 22h16"/>
+                        <path d="M10 14.66V17c0 0 0 0 2 0s2 0 2 0v-2.34"/>
+                        <path d="M12 14.66V17"/>
+                        <path d="M8 9v6a4 4 0 0 0 8 0V9"/>
+                    </svg>
+                    <h2>키워드 순위 확인</h2>
+                </div>
+                <p class="section-description">
+                    지역별 키워드에서 우리 학원이 몇 위에 위치하는지 확인하세요. 최대 20개 키워드까지 한 번에 확인할 수 있습니다.
+                </p>
+            </div>
+
+            <!-- Input Form -->
+            <div class="content-section">
+                <div class="input-group">
+                    <label>우리 학원명</label>
+                    <input type="text" class="academy-input" value="벌원학원" placeholder="학원명을 입력하세요">
+                </div>
+
+                <div class="input-group">
+                    <label>확인할 키워드 목록 (한 줄에 하나씩 입력)</label>
+                    <textarea class="keywords-textarea" placeholder="키워드를 한 줄에 하나씩 입력하세요">탄벌동 영어학원
+탄벌동 수학학원
+탄벌초 영어학원
+관악구 영어학원
+신림동 영어학원
+관악구 초등영어
+신림동 파닉스
+벌원동 학원</textarea>
+                    <p style="font-size: 12px; color: #999; margin-top: 8px;">
+                        예시: 탄벌동 영어학원, 관악구 초등영어, 신림동 미래엔영어 등
+                    </p>
+                </div>
+
+                <button class="check-button" onclick="checkRanks()">순위 확인 시작 (데모)</button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-number">7</div>
+                    <div class="summary-label">검색 노출</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">2</div>
+                    <div class="summary-label">TOP 3</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">5</div>
+                    <div class="summary-label">TOP 10</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">7</div>
+                    <div class="summary-label">평균 순위</div>
+                </div>
+            </div>
+
+            <!-- Rank List -->
+            <div class="content-section">
+                <h3>키워드 순위 목록</h3>
+                <div class="rank-items">
+                    <div class="rank-item excellent">
+                        <div class="rank-keyword">탄벌동 영어학원</div>
+                        <div class="rank-info">
+                            <span class="rank-number">2위</span>
+                            <span class="rank-status excellent">우수</span>
+                        </div>
+                    </div>
+                    <div class="rank-item good">
+                        <div class="rank-keyword">탄벌동 수학학원</div>
+                        <div class="rank-info">
+                            <span class="rank-number">5위</span>
+                            <span class="rank-status good">양호</span>
+                        </div>
+                    </div>
+                    <div class="rank-item good">
+                        <div class="rank-keyword">탄벌초 영어학원</div>
+                        <div class="rank-info">
+                            <span class="rank-number">8위</span>
+                            <span class="rank-status good">양호</span>
+                        </div>
+                    </div>
+                    <div class="rank-item needs-improvement">
+                        <div class="rank-keyword">관악구 영어학원</div>
+                        <div class="rank-info">
+                            <span class="rank-number">12위</span>
+                            <span class="rank-status needs-improvement">개선필요</span>
+                        </div>
+                    </div>
+                    <div class="rank-item needs-improvement">
+                        <div class="rank-keyword">신림동 영어학원</div>
+                        <div class="rank-info">
+                            <span class="rank-number">15위</span>
+                            <span class="rank-status needs-improvement">개선필요</span>
+                        </div>
+                    </div>
+                    <div class="rank-item excellent">
+                        <div class="rank-keyword">관악구 초등영어</div>
+                        <div class="rank-info">
+                            <span class="rank-number">3위</span>
+                            <span class="rank-status excellent">우수</span>
+                        </div>
+                    </div>
+                    <div class="rank-item good">
+                        <div class="rank-keyword">신림동 파닉스</div>
+                        <div class="rank-info">
+                            <span class="rank-number">7위</span>
+                            <span class="rank-status good">양호</span>
+                        </div>
+                    </div>
+                    <div class="rank-item not-exposed">
+                        <div class="rank-keyword">벌원동 학원</div>
+                        <div class="rank-info">
+                            <span class="rank-number">-</span>
+                            <span class="rank-status not-exposed">미노출</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function analyzePlace() {
+            const url = document.querySelector('.url-input').value;
+            alert('분석이 시작되었습니다!\nURL: ' + url + '\n\n(데모 버전입니다)');
+        }
+
+        function checkRanks() {
+            const academyName = document.querySelector('.academy-input').value;
+            const keywords = document.querySelector('.keywords-textarea').value;
+            alert('순위 확인이 시작되었습니다!\n학원명: ' + academyName + '\n\n(데모 버전입니다)');
+        }
+    </script>
+</body>
+</html> 
